@@ -1,0 +1,94 @@
+POST http://localhost:8000/api/product/add
+Content-Type: application/json
+
+{
+    "name_product": "laptop surface",
+    "description": "this is laptop window",
+    "photo": "https://images.fpt.shop/unsafe/fit-in/585x390/filters:quality(5):fill(white)/fptshop.com.vn/Uploads/Originals/2021/1/12/637460438030330849_microsoft-surface-pro-7-i5-1035g4-bac-2.png",
+    "price": 800
+}
+
+###
+GET http://localhost:8000/api/product-list
+
+###
+GET http://localhost:8000/api/product/2/show
+
+### Add to cart : ok
+POST http://localhost:8000/api/add-to-cart
+Content-Type: application/json
+
+{
+    "product_id": 4,
+    "product_name": "laptop surface",
+    "product_photo": "https://images.fpt.shop/unsafe/fit-in/585x390/filters:quality(5):fill(white)/fptshop.com.vn/Uploads/Originals/2021/1/12/637460438030330849_microsoft-surface-pro-7-i5-1035g4-bac-2.png",
+    "product_price": 800,
+    "count": 1,
+    "total": 800
+}
+### Add to cart : ok
+POST http://localhost:8000/api/add-to-cart
+Content-Type: application/json
+
+{
+    "product_id": 2,
+    "product_name": "laptop dell",
+    "product_photo": "https://laptoptld.com/wp-content/uploads/2022/11/laptop-xps-13-9315-pdp-mod05-bl-pu.webp",
+    "product_price": 1200,
+    "count": 1,
+    "total": 1200
+}
+
+
+
+### view Cart : ok
+GET http://localhost:8000/api/view-cart
+
+### test view a item 
+GET http://localhost:8000/api/cart/16/show
+
+### update Cart : ok pass
+PUT http://localhost:8000/api/cart/6/update
+Content-Type: application/json
+
+{
+    "count": 3
+}
+
+
+
+### delete item Cart : ok 
+DELETE http://localhost:8000/api/cart/2/delete
+
+### update Cart many item
+PUT http://localhost:8000/api/cart/update
+Content-Type: application/json
+
+{
+    "data": [
+        {
+            "id": 5,
+            "count": 2
+        },
+        {
+            "id": 7,
+            "count": 1
+        }
+    ]
+}
+
+### delete Cart many item
+
+DELETE  http://localhost:8000/api/cart/delete
+Content-Type: application/json
+
+{
+    "data": [
+        {
+            "id": 12
+        },
+        {
+            "id": 11
+        }
+    ]
+}
