@@ -15,31 +15,38 @@ class CartController extends Controller
      */
     public function index(Request $request)
     {
-        $user_id = $request->user_id || 1;
-        $cartList = Cart::where('user_id', $user_id)->get();
-        $total =  0;
-        foreach ($cartList as $cartItem) {
-            $total += $cartItem->total;
-        }
+        try {
+            $user_id = $request->user_id || 1;
+            $cartList = Cart::where('user_id', $user_id)->get();
+            $total =  0;
+            foreach ($cartList as $cartItem) {
+                $total += $cartItem->total;
+            }
 
-        // $result = $total.map(({ $total }) => $total);
-        // foreach($total as $total=>$val){
-        //     $total= $val;
-        // };
-        // $total->map(function($value) {
-        //     $totalAll  += $value;
-        // });
+            // $result = $total.map(({ $total }) => $total);
+            // foreach($total as $total=>$val){
+            //     $total= $val;
+            // };
+            // $total->map(function($value) {
+            //     $totalAll  += $value;
+            // });
 
 
-        // dd($totalALl);
-        // $cartTotal = $totalALl->count(Cart::select('total')->where('user_id', 1)->get());
+            // dd($totalALl);
+            // $cartTotal = $totalALl->count(Cart::select('total')->where('user_id', 1)->get());
 
-        // $cartCount = $cartList->
+            // $cartCount = $cartList->
 
-        return response()->json([
-            'cart' => $cartList,
-            'total' => $total,
-        ], 200);
+            return response()->json([
+                'cart' => $cartList,
+                'total' => $total,
+            ], 200);
+        } catch (\Exception $ex) {
+            return response()->json([
+                'access' => 'fail',
+                'message' => $ex
+            ], 400);
+        };
     }
 
     /** 
@@ -181,18 +188,18 @@ class CartController extends Controller
         }
     }
 
-    public function updateManyItem(Request $request) {
+    public function updateManyItem(Request $request)
+    {
         try {
             $listItem = $request->data;
-            
+
             // return response()->json([
             //     'list data' => $listItem
             // ],200);
 
             foreach ($listItem as $item) {
                 $cartItem = Cart::where('id', $item['id'])->first();
-                if(isset($cartItem))
-                {
+                if (isset($cartItem)) {
                     $cartItem->count = $item['count'];
                     $cartItem->total = $item['count'] * $cartItem->product_price;
 
@@ -209,7 +216,8 @@ class CartController extends Controller
         }
     }
 
-    public function destroyManyItem(Request $request) {
+    public function destroyManyItem(Request $request)
+    {
         // try {
         //     $listDelete = $request->data;
         //     dd($listDelete);
@@ -223,7 +231,7 @@ class CartController extends Controller
             $listDelete = $request->data;
             foreach ($listDelete as $i) {
                 $cartItem = Cart::where('id', $i['id'])->first();
-                if(isset($cartItem)) {
+                if (isset($cartItem)) {
                     $cartItem->delete();
                 }
             }
@@ -231,14 +239,10 @@ class CartController extends Controller
             return response()->json([
                 'message' => 'delete many item is successfully'
             ], 200);
-            
-        }
-        catch (\Exception $ex) {
+        } catch (\Exception $ex) {
             return response()->json([
                 'message' => $ex
             ], 400);
         }
     }
-
-
 }
