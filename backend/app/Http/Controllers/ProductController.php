@@ -14,10 +14,30 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $product = Product::all();
-        return response()->json([
-            'products' => $product
-        ], 200);
+        // $product = Product::all();
+        // return response()->json([
+        //     'products' => $product
+        // ], 200);
+        
+        // paginate
+        try {
+            $per_page = \Request::get('per_page') ?: 10;
+
+            $productList = Product::paginate($per_page);
+            $productList->appends(['per_page' => 'per_page']);
+
+            return response()->json([
+                'access' => 'true',
+                'productList' => $productList
+            ], 200);
+
+        }catch(\Exception $ex) {
+            //throw $th
+            return response()->json([
+                'access' => 'fail',
+                'message' => $ex
+            ], 400);
+        };
     }
 
     /**
