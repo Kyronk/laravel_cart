@@ -14,11 +14,11 @@ class ProductController extends Controller
      */
     public function index()
     {
-       // $product = Product::all();
+        // $product = Product::all();
         // return response()->json([
         //     'products' => $product
         // ], 200);
-        
+
         // paginate
         try {
             $per_page = \Request::get('per_page') ?: 10;
@@ -30,8 +30,7 @@ class ProductController extends Controller
                 'access' => 'true',
                 'productList' => $productList
             ], 200);
-
-        }catch(\Exception $ex) {
+        } catch (\Exception $ex) {
             //throw $th
             return response()->json([
                 'access' => 'fail',
@@ -67,16 +66,44 @@ class ProductController extends Controller
         //     'price' => 'required| max: 10',
         // ]);
         //
-        
-        $product = new Product;
-        $product->name_product = $request->name_product;
-        $product->description = $request->description;
-        $product->photo = $request->photo;
-        $product->price = $request->price;
-        $product->save();
-        return response()->json([
-            'message' => 'product Added successfully'
-        ], 200);
+
+        // $product = new Product;
+        // $product->name_product = $request->name_product;
+        // $product->description = $request->description;
+        // $product->photo = $request->photo;
+        // $product->price = $request->price;
+        // $product->save();
+        // return response()->json([
+        //     'message' => 'product Added successfully'
+        // ], 200);
+        try {
+            $getProductName = Product::where('name_product', $request->name_product)->first();
+
+            if (isset($getProductName)) {
+                return response()->json([
+                    'access' => 'fail',
+                    'message' => 'name product is already'
+                ], 400);
+            } else {
+                $productNew = new Product;
+                $productNew->name_product = $request->name_product;
+                $productNew->description_product = $request->description_product;
+                $productNew->photo_product = $request->photo_product;
+                $productNew->price_product = $request->price_product;
+
+                $productNew->save();
+
+                return response()->json([
+                    'access' => true,
+                    'message' => 'the product item is add successfully'
+                ], 200);
+            }
+        } catch (\Exception $ex) {
+            return response()->json([
+                'access' => 'fail',
+                'message' => $ex
+            ], 400);
+        }
     }
 
     /**
@@ -87,16 +114,36 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        $product = Product::find($id);
-        if ($product) {
+        // $product = Product::find($id);
+        // if ($product) {
+        //     return response()->json([
+        //         'product' => $product,
+        //     ], 200);
+        // } else {
+        //     return response()->json([
+        //         'message' => 'No Product Found'
+        //     ], 404);
+        // };
+        try {
+        
+            $productId = Product::find($id);
+            if(isset($productId)) {
+                return response()->json([
+                    'access' => true,
+                    'productId' => $productId
+                ], 200);
+            }else {
+                return response()->json([
+                    'access' => 'fail',
+                    'message' => "product is not found"
+                ], 404);
+            }
+        } catch (\Exception $ex) {
             return response()->json([
-                'product' => $product,
-            ], 200);
-        } else {
-            return response()->json([
-                'message' => 'No Product Found'
-            ], 404);
-        };
+                'access' => 'fail',
+                'message' => $ex
+            ], 400);
+        }
     }
 
     /**
