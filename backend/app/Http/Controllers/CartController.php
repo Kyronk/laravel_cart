@@ -15,31 +15,67 @@ class CartController extends Controller
      */
     public function index(Request $request)
     {
-        $user_id = $request->user_id || 1;
-        $cartList = Cart::where('user_id', $user_id)->get();
-        $total =  0;
-        foreach ($cartList as $cartItem) {
-            $total += $cartItem->total;
+        // $user_id = $request->user_id || 1;
+        // $cartList = Cart::where('user_id', $user_id)->get();
+        // $total =  0;
+        // foreach ($cartList as $cartItem) {
+        //     $total += $cartItem->total;
+        // }
+
+        // // $result = $total.map(({ $total }) => $total);
+        // // foreach($total as $total=>$val){
+        // //     $total= $val;
+        // // };
+        // // $total->map(function($value) {
+        // //     $totalAll  += $value;
+        // // });
+
+
+        // // dd($totalALl);
+        // // $cartTotal = $totalALl->count(Cart::select('total')->where('user_id', 1)->get());
+
+        // // $cartCount = $cartList->
+
+        // return response()->json([
+        //     'cart' => $cartList,
+        //     'total' => $total,
+        // ], 200);
+    
+        try {
+            $userId = $request->user_id;
+            $cartList = Cart::where('user_id', $userId)->get();
+
+            if(!isset($userId)) return response()->json(['access' => 'fail', 'message' => 'you can not add to cart'], 400); 
+            
+            if(count($cartList) === 0 ) { return response()->json([
+                'access' => true,
+                'message' =>  'you have not product in your shopping cart !'
+            ], 200);}
+
+            if(isset($cartList)) {
+                $total = 0;
+                //
+                foreach ($cartList as $itemInCart) {
+                    $total += $itemInCart->total;
+                }
+                return response()->json([
+                    'access' => true,
+                    'cartList' => $cartList,
+                    'total' => $total
+                ], 200);
+            }else {
+                return response()->json([
+                    'access' => true,
+                    'message' =>  'you have not product in your shopping cart !'
+                ], 200);
+            }
+        } catch (\Exception $ex) {
+            return response()->json([
+                'access' => 'fail',
+                'message' => $ex
+            ], 400);
         }
 
-        // $result = $total.map(({ $total }) => $total);
-        // foreach($total as $total=>$val){
-        //     $total= $val;
-        // };
-        // $total->map(function($value) {
-        //     $totalAll  += $value;
-        // });
-
-
-        // dd($totalALl);
-        // $cartTotal = $totalALl->count(Cart::select('total')->where('user_id', 1)->get());
-
-        // $cartCount = $cartList->
-
-        return response()->json([
-            'cart' => $cartList,
-            'total' => $total,
-        ], 200);
     }
 
     /** 
@@ -142,20 +178,48 @@ class CartController extends Controller
     {
         //
         // $cartItem = Cart::find($id)->count;
-        $cartItem = Cart::find($id);
-        if ($cartItem) {
-            $price = $cartItem->product_price;
-            $cartItem->count = $request->count;
+        // $cartItem = Cart::find($id);
+        // if ($cartItem) {
+        //     $price = $cartItem->product_price;
+        //     $cartItem->count = $request->count;
 
-            $cartItem->total = ($request->count * $price);
-            $cartItem->update();
+        //     $cartItem->total = ($request->count * $price);
+        //     $cartItem->update();
 
+        //     return response()->json([
+        //         'message' => 'cart is update successfully~',
+        //     ], 200);
+        // } else {
+        //     return response()->json([
+        //         'message' => 'no cart item'
+        //     ], 400);
+        // }
+    
+        try {
+            $cartItem = Cart::find($id);
+            if(isset($cartItem)) {
+                $priceItem = $cartItem->price_product;
+                
+                $cartItem->count = $request->count;
+                $cartItem->total = $priceItem * $request->count;
+                $cartItem->update();
+
+                return response()->json([
+                    'access' => true,
+                    'message' => 'item is update successfully',
+                    'item' => $cartItem
+                ], 200);
+            } else {
+                return response()->json([
+                    'access' => 'fail',
+                    'message' => 'item is not found'
+                ], 400);
+            }
+
+        } catch (\Exception $ex) {
             return response()->json([
-                'message' => 'cart is update successfully~',
-            ], 200);
-        } else {
-            return response()->json([
-                'message' => 'no cart item'
+                'access' => 'fail',
+                'message' => $ex
             ], 400);
         }
     }
