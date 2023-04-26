@@ -144,16 +144,24 @@ class CartController extends Controller
     public function show($id)
     {
         //
-        $cart = Cart::find($id)->count;
-        if ($cart) {
+        try{
+            $cart = Cart::find($id)->count;
+            if ($cart) {
             return response()->json([
                 'cartItem' => $cart,
             ], 200);
-        } else {
-            return response()->json([
+            } else {
+                return response()->json([
                 'message' => 'No Product Found'
             ], 404);
         };
+        }catch (\Exception $ex) {
+            //throw $th
+            return response()->json([
+                'message' => $ex
+            ]);
+        }
+        
     }
 
     /**
@@ -232,16 +240,37 @@ class CartController extends Controller
      */
     public function destroy($id)
     {
-        $cartItem = Cart::find($id);
-        if ($cartItem) {
-            $cartItem->delete();
+        // $cartItem = Cart::find($id);
+        // if ($cartItem) {
+        //     $cartItem->delete();
+        //     return response()->json([
+        //         'message' => 'product deleted is successfully'
+        //     ], 200);
+        // } else {
+        //     return response()->json([
+        //         'message' => 'product is not found',
+        //     ], 404);
+        // }
+        try {
+            $cartItem = Cart::find($id);
+            if(isset($cartItem)) {
+                $cartItem->delete();
+                return response()->json([
+                    'access' => true,
+                    'message' => 'item is remove from cart'
+                ], 200);
+            } else {
+                return response()->json([
+                    'access' => 'fail',
+                    'message' => 'item is not found'
+                ], 400);
+            }
+
+        } catch (\Exception $ex) {
             return response()->json([
-                'message' => 'product deleted is successfully'
-            ], 200);
-        } else {
-            return response()->json([
-                'message' => 'product is not found',
-            ], 404);
+                'access' => 'fail',
+                'message' => $ex
+            ], 400);
         }
     }
 
