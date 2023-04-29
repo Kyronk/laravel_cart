@@ -167,6 +167,7 @@ class ProductController extends Controller
     public function update(Request $request, $id)
     {
         //
+
     }
 
     /**
@@ -178,5 +179,26 @@ class ProductController extends Controller
     public function destroy($id)
     {
         //
+        try {
+            $productItem = Product::find($id);
+            if(isset($productItem)) {
+                $productItem->delete();
+                return response()->json([
+                    'access' => true,
+                    'message' => 'item is remove to list'
+                ]);
+            } else {
+                return response()->json([
+                    'access'=> 'fail',
+                    'message' => 'item is not found'
+                ]);
+            }
+        } catch(\Exception $ex) {
+            //throw $th
+            return response()->json([
+                'access' => 'fail',
+                'message' => $ex
+            ]);
+        }
     }
 }
